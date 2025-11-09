@@ -1,7 +1,6 @@
-﻿from django.shortcuts import render
+from django.shortcuts import render
 from django.contrib.auth.decorators import permission_required
 
-# Book management views with permission_required decorator
 @permission_required('relationship_app.can_add_book')
 def add_book(request):
     return render(request, 'add_book.html')
