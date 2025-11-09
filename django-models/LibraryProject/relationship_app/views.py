@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import user_passes_test, login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-# Role checking functions
+# Role checking functions that return True/False
 def is_admin(user):
     return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
 
@@ -16,23 +16,22 @@ def is_librarian(user):
 def is_member(user):
     return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Member'
 
-
+# Views using @user_passes_test decorator
 @login_required
-@user_passes_test(is_admin)
+@user_passes_test(is_admin)  # Using @user_passes_test decorator
 def admin_view(request):
     return render(request, 'relationship_app/admin_view.html')
 
 @login_required
-@user_passes_test(is_librarian)
+@user_passes_test(is_librarian)  # Using @user_passes_test decorator
 def librarian_view(request):
-    """Librarian view - only accessible to users with Librarian role"""
     return render(request, 'relationship_app/librarian_view.html')
 
 @login_required
-@user_passes_test(is_member)
+@user_passes_test(is_member)  # Using @user_passes_test decorator
 def member_view(request):
-    """Member view - only accessible to users with Member role"""
     return render(request, 'relationship_app/member_view.html')
+
 
 
 
