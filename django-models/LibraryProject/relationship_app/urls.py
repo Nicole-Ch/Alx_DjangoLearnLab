@@ -9,8 +9,15 @@ urlpatterns = [
 
     # class-based view (use .as_view())
     path('library/<int:pk>/', LibraryDetailView.as_view(), name='library_detail'),
-    path('login/', LoginView.as_view(template_name='registration/login.html'), name='login'),
-    path('signup/', SignUpView.as_view(), name='signup'),
-    path('logout/', LogoutView.as_view(), name='logout'),
+    # Registration
+    path('signup/', SignUpView.as_view(), name='register'),
+
+    # Login (built-in view)
+    path('login/', LoginView.as_view(template_name='relationship_app/login.html'), name='login'),
+
+    # Logout (built-in view, with template)
+    path('logout/', LogoutView.as_view(template_name='relationship_app/logout.html'), name='logout'),
+
+    
 
 ]     
