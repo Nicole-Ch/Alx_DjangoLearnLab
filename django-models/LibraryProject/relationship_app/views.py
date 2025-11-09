@@ -1,13 +1,11 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.detail import DetailView
-from .models import Book, Library, UserProfile
+from .models import Book, Librarian, UserProfile, Library, Author
 from django.contrib.auth import login
-from django.contrib.auth.decorators import user_passes_test, login_required
+from django.contrib.auth.decorators import user_passes_test, login_required, permission_required  
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
-from .forms import BookForm
+from .forms import BookForm  
 
 # Role checking functions that return True/False
 def is_admin(user):
@@ -67,6 +65,7 @@ def register(request):
 
 
 
+# Custom permission views for book management
 @login_required
 @permission_required('relationship_app.can_add_book', raise_exception=True)
 def add_book(request):
