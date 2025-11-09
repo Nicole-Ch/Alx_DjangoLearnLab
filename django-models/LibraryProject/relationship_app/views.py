@@ -5,6 +5,9 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import user_passes_test, login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
+from .forms import BookForm
 
 # Role checking functions that return True/False
 def is_admin(user):
@@ -55,3 +58,65 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'relationship_app/register.html', {'form': form})
+
+
+
+
+
+
+
+
+
+@login_required
+@permission_required('relationship_app.can_add_book', raise_exception=True)
+def add_book(request):
+    """View to add a new book - requires can_add_book permission"""
+    if request.method == 'POST':
+        form = BookForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('list_books')
+    else:
+        form = BookForm()
+    
+    context = {
+        'form': form,
+        'action': 'Add'
+    }
+    return render(request, 'relationship_app/book_form.html', context)
+
+@login_required
+@permission_required('relationship_app.can_change_book', raise_exception=True)
+def edit_book(request, book_id):
+    """View to edit a book - requires can_change_book permission"""
+    book = get_object_or_404(Book, id=book_id)
+    
+    if request.method == 'POST':
+        form = BookForm(request.POST, instance=book)
+        if form.is_valid():
+            form.save()
+            return redirect('list_books')
+    else:
+        form = BookForm(instance=book)
+    
+    context = {
+        'form': form,
+        'action': 'Edit',
+        'book': book
+    }
+    return render(request, 'relationship_app/book_form.html', context)
+
+@login_required
+@permission_required('relationship_app.can_delete_book', raise_exception=True)
+def delete_book(request, book_id):
+    """View to delete a book - requires can_delete_book permission"""
+    book = get_object_or_404(Book, id=book_id)
+    
+    if request.method == 'POST':
+        book.delete()
+        return redirect('list_books')
+    
+    context = {
+        'book': book
+    }
+    return render(request, 'relationship_app/confirm_delete.html', context)
