@@ -19,15 +19,13 @@ class LibraryDetailView(DetailView):
     context_object_name = 'library'
 
 
-class SignUpView(View):
-    def get(self, request):
-        form = UserCreationForm()
-        return render(request, 'relationship_app/register.html', {'form': form})
-
-    def post(self, request):
+def register(request):
+    if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)  # log the user in after signup
             return redirect('profile')  # redirect to profile page
-        return render(request, 'relationship_app/register.html', {'form': form})
+    else:
+        form = UserCreationForm()
+    return render(request, 'relationship_app/register.html', {'form': form})
