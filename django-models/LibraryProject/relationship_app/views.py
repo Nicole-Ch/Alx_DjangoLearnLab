@@ -1,13 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.detail import DetailView
 from django.contrib.auth import login
-from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Book, Library, Author, Librarian, UserProfile
 from .forms import BookForm
 
-# Role checking functions
 def is_admin(user):
     return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
 
@@ -17,7 +18,6 @@ def is_librarian(user):
 def is_member(user):
     return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Member'
 
-# Existing views
 def list_books(request):
     books = Book.objects.all()
     return render(request, 'relationship_app/list_books.html', {'books': books})
@@ -38,7 +38,6 @@ def register(request):
         form = UserCreationForm()
     return render(request, 'relationship_app/register.html', {'form': form})
 
-# Role-based views
 @login_required
 @user_passes_test(is_admin)
 def admin_view(request):
@@ -54,7 +53,6 @@ def librarian_view(request):
 def member_view(request):
     return render(request, 'relationship_app/member_view.html')
 
-# Book management views with permission_required decorator
 @login_required
 @permission_required('relationship_app.can_add_book')
 def add_book(request):
