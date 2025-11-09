@@ -48,23 +48,22 @@ class Librarian(models.Model):
 class UserProfile(models.Model):
     ROLE_CHOICES = [
         ('Admin', 'Admin'),
-        ('Librarian', 'Librarian'),
+        ('Librarian', 'Librarian'), 
         ('Member', 'Member'),
     ]
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
-
+    
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='userprofile')
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='Member')
+    
     def __str__(self):
-        return f"{self.user.username} ({self.role})"
+        return f"{self.user.username} - {self.role}"
 
-# Automatically create UserProfile when a new User is created
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        # Default role can be 'Member', adjust as needed
-        UserProfile.objects.create(user=instance, role='Member')
+        UserProfile.objects.create(user=instance)
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
-    instance.userprofile.save()    
+    if hasattr(instance, 'userprofile'):
+        instance.userprofile.save()
