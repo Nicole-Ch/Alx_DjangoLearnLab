@@ -1,0 +1,62 @@
+<!-- bookshelf/templates/bookshelf/book_list.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book List</title>
+    <style>
+        .book-item { margin: 10px 0; padding: 10px; border: 1px solid #ddd; }
+        .search-form { margin: 20px 0; }
+        .messages { color: green; }
+        .errors { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Book List</h1>
+
+    <!-- Safe Search Form (GET request - no CSRF needed) -->
+    <div class="search-form">
+        <form method="get" action=".">
+            <input type="text" name="q" placeholder="Search books..." value="{{ request.GET.q|default:'' }}">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <!-- Messages Display -->
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Book List -->
+    {% if books %}
+        <h2>Books ({{ books|length }} found)</h2>
+        {% for book in books %}
+            <div class="book-item">
+                <h3>{{ book.title }}</h3>
+                <p><strong>Author:</strong> {{ book.author }}</p>
+                <p><strong>Year:</strong> {{ book.publication_year }}</p>
+                
+                <!-- Safe deletion form with CSRF token -->
+                {% if user.is_authenticated and user.is_staff %}
+                <form method="post" action="{% url 'delete_book' book.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" onclick="return confirm('Are you sure you want to delete {{ book.title|escapejs }}?')">Delete</button>
+                </form>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No books found.</p>
+    {% endif %}
+
+    <!-- Add Book Link -->
+    {% if user.is_authenticated %}
+        <p><a href="{% url 'form_example' %}">Add New Book</a></p>
+    {% endif %}
+</body>
+</html>
