@@ -13,4 +13,9 @@ urlpatterns = [
 
     
     path('example-form/', views.example_form_view, name='example_form'),
+
+
+    
+    path('books/create/', views.book_create, name='book_create'),
+    
 ]
