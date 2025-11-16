@@ -1,43 +1,112 @@
 # bookshelf/forms.py
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Book
+from django.utils.html import escape
+import re
 
-class BookForm(forms.ModelForm):
-    class Meta:
-        model = Book
-        fields = ['title', 'author', 'publication_year']
+class ExampleForm(forms.Form):
+    """
+    ExampleForm for demonstrating secure form handling with CSRF protection,
+    input validation, and XSS prevention as required by security best practices.
+    """
     
-    def clean_title(self):
-        """Secure title validation"""
-        title = self.cleaned_data.get('title', '').strip()
-        if not title:
-            raise ValidationError("Title is required.")
+    # Form fields with proper validation
+    name = forms.CharField(
+        max_length=100,
+        required=True,
+        label='Your Name',
+        help_text='Enter your full name',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your name'
+        })
+    )
+    
+    email = forms.EmailField(
+        max_length=150,
+        required=True,
+        label='Email Address',
+        help_text='Enter a valid email address',
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control', 
+            'placeholder': 'your@email.com'
+        })
+    )
+    
+    message = forms.CharField(
+        required=True,
+        label='Message',
+        help_text='Enter your message',
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'placeholder': 'Type your message here...',
+            'rows': 4
+        })
+    )
+    
+    age = forms.IntegerField(
+        required=False,
+        label='Age',
+        min_value=0,
+        max_value=120,
+        help_text='Optional: Enter your age',
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Age'
+        })
+    )
+    
+    agree_to_terms = forms.BooleanField(
+        required=True,
+        label='I agree to the terms and conditions',
+        help_text='You must agree to proceed'
+    )
+
+    def clean_name(self):
+        """Secure name validation with XSS prevention"""
+        name = self.cleaned_data.get('name', '').strip()
+        if not name:
+            raise ValidationError("Name is required.")
         
-        # Basic XSS prevention
+        # XSS prevention - check for dangerous patterns
         dangerous_patterns = ['<script>', '</script>', 'javascript:', 'onload=', 'onerror=']
         for pattern in dangerous_patterns:
-            if pattern in title.lower():
-                raise ValidationError("Invalid characters in title.")
-        
-        return title
-    
-    def clean_author(self):
-        """Secure author validation"""
-        author = self.cleaned_data.get('author', '').strip()
-        if not author:
-            raise ValidationError("Author is required.")
+            if pattern in name.lower():
+                raise ValidationError("Invalid characters in name.")
         
         # Allow only letters, spaces, hyphens, and apostrophes
-        import re
-        if not re.match(r'^[A-Za-z\s\-\'\.]+$', author):
-            raise ValidationError("Author name contains invalid characters.")
+        if not re.match(r'^[A-Za-z\s\-\'\.]+$', name):
+            raise ValidationError("Name contains invalid characters. Only letters, spaces, hyphens, and apostrophes are allowed.")
         
-        return author
-    
-    def clean_publication_year(self):
-        """Secure publication year validation"""
-        year = self.cleaned_data.get('publication_year')
-        if year and (year < 1000 or year > 2030):
-            raise ValidationError("Please enter a valid publication year (1000-2030).")
-        return year
+        return name
+
+    def clean_message(self):
+        """Secure message validation"""
+        message = self.cleaned_data.get('message', '').strip()
+        if not message:
+            raise ValidationError("Message is required.")
+        
+        if len(message) < 10:
+            raise ValidationError("Message must be at least 10 characters long.")
+        
+        # Basic XSS prevention
+        if '<script>' in message.lower():
+            raise ValidationError("Message contains invalid content.")
+        
+        return message
+
+    def clean(self):
+        """Form-wide validation"""
+        cleaned_data = super().clean()
+        email = cleaned_data.get('email')
+        agree_to_terms = cleaned_data.get('agree_to_terms')
+        
+        # Example of cross-field validation
+        if email and 'test' in email.lower() and not agree_to_terms:
+            raise ValidationError("Test emails must agree to terms.")
+        
+        return cleaned_data
+
+# Keep your existing BookForm if you have it
+class BookForm(forms.ModelForm):
+    pass
