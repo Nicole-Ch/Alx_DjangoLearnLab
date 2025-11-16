@@ -1,4 +1,4 @@
-from django.contrib import admin
+﻿content = '''from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 from .models import CustomUser, Book
@@ -27,3 +27,8 @@ class CustomUserAdmin(UserAdmin):
 class BookAdmin(admin.ModelAdmin):
     list_display = ['title', 'author', 'publication_year']
     search_fields = ['title', 'author']
+'''
+
+with open('bookshelf/admin.py', 'w', encoding='utf-8') as f:
+    f.write(content)
+print("✓ Updated bookshelf/admin.py")

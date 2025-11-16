@@ -1,4 +1,4 @@
-from django.db import models
+﻿content = '''from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.conf import settings  # Use settings to get AUTH_USER_MODEL
@@ -60,3 +60,8 @@ def create_user_profile(sender, instance, created, **kwargs):
 def save_user_profile(sender, instance, **kwargs):
     if hasattr(instance, 'userprofile'):
         instance.userprofile.save()
+'''
+
+with open('relationship_app/models.py', 'w', encoding='utf-8') as f:
+    f.write(content)
+print("✓ Fixed relationship_app/models.py")

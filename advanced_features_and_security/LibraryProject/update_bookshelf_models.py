@@ -1,12 +1,12 @@
-from django.db import models
+﻿content = '''from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, date_of_birth, password=None, **extra_fields):
-        """
+        \"\"\"
         Create and return a regular user with an email and date of birth.
-        """
+        \"\"\"
         if not email:
             raise ValueError('The Email field must be set')
         email = self.normalize_email(email)
@@ -16,9 +16,9 @@ class CustomUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, date_of_birth, password=None, **extra_fields):
-        """
+        \"\"\"
         Create and return a superuser with an email and date of birth.
-        """
+        \"\"\"
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
@@ -58,3 +58,8 @@ class Book(models.Model):
     
     def __str__(self):
         return self.title
+'''
+
+with open('bookshelf/models.py', 'w', encoding='utf-8') as f:
+    f.write(content)
+print("✓ Updated bookshelf/models.py")

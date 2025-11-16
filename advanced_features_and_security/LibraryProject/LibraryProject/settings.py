@@ -105,7 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Add this line to specify the custom user model
-AUTH_USER_MODEL = 'relationship_app.CustomUser'
+AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
 # Also ensure you have these settings for media files (for profile photos)
 import os
