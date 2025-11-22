@@ -129,7 +129,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
         # optionally, you can keep SessionAuthentication for browsable API:
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.permissions.IsAuthenticated',
+        
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',  # default; override per-view as needed
