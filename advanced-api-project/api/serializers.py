@@ -4,13 +4,13 @@ from datetime import date
 
 
 class BookSerializer(serializers.ModelSerializer):
-       class Meta:
-            model = Book
-            fields = "__all__"
+    class Meta:
+        model = Book
+        fields = "__all__"
 
     # Field-level validation for publication_year.
-    #Raises ValidationError if the year is greater than the current year.
-       def validate_publication_year(self, data):
+    # Raises ValidationError if the year is greater than the current year.
+    def validate_publication_year(self, data):
             current_year = date.today().year
             if data > current_year:
                   raise serializers.ValidationError("Publication_year can't be in the future.")
