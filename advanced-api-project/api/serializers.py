@@ -23,7 +23,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     - books: nested Book representations using AuthorBookNestedSerializer.
     This uses the related_name 'books' defined on Book.author. """
     
-    books = BookSerializer(many=True)
+    books = BookSerializer(many=True, read_only = True)
 
     class Meta:
             model = Author     
