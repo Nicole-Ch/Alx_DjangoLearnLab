@@ -16,15 +16,16 @@ class BookSerializer(serializers.ModelSerializer):
                   raise serializers.ValidationError("Publication_year can't be in the future.")
             return data
 
-class AuthorSerializer(serializers.ModelSerializer):
+# Minimal nested serializer for AuthorSerializer
+class AuthorBookNestedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Book
+        fields = ['id', 'title', 'publication_year']
 
-    """ Serializes Author with a nested list of books.
-    - name: author's name
-    - books: nested Book representations using AuthorBookNestedSerializer.
-    This uses the related_name 'books' defined on Book.author. """
-    
-    books = BookSerializer(many=True, read_only = True)
+# Author serializer using the nested serializer
+class AuthorSerializer(serializers.ModelSerializer):
+    books = AuthorBookNestedSerializer(many=True, read_only=True)
 
     class Meta:
-            model = Author     
-            fields = ['id','name', 'books']       
+        model = Author
+        fields = ['id', 'name', 'books']    
