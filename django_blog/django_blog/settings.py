@@ -84,8 +84,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME':  'django_blog',
-        'USER': 'rootTNYBold$2025',
-        'PASSWORD': 'strong_password_here',
+        'USER': 'root',
+        'PASSWORD': 'TNYBold$2025',
         'HOST': 'localhost',
         'PORT': '3306',
     }
