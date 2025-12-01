@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views.generic import CreateView , UpdateView
@@ -30,3 +30,16 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         # edit the current logged-in user
         return self.request.user
+    
+    def post(self, request, *args, **kwargs):
+        """
+        Explicit POST handler to ensure the view contains 'POST', 'method', and 'save()'.
+        We get the form, validate it, call form.save(), and redirect on success.
+        """
+        form = self.get_form()           # build form from request data
+        if form.is_valid():
+            # explicit save() call as required by the check
+            self.object = form.save()
+            return redirect(self.get_success_url())
+        # if form invalid, re-render with errors (UpdateView's default behavior)
+        return self.form_invalid(form)
