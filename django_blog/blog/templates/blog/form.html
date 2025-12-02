@@ -1,0 +1,22 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+
+
+<form>
+    {% csrf_token %}
+    {{form.as_p}}
+    <button type="submit">
+        {% if form.instance.pk %} <!-- form.instance is the underlying model instance that the form is bound to -->
+            Save changes
+        {% else %}
+            Create post
+        {% endif %}</button>
+</form>
+
+ <p><a href="{% url 'posts' %}">Back to posts</a></p>
+
+{% endblock %}
+
+<!-- If form.instance.pk is truthy → the instance already exists in the database (it has a primary key).
+ That means the form is being used to edit an existing post. The template renders the text Save changes. -->

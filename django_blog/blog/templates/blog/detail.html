@@ -1,0 +1,21 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}{{detailpost.title}}{% endblock %}
+
+{% block content %}
+
+<p>Post Author: {{detailpost.author.username}}</p>
+<p>{{detailpost.content}}</p>
+
+{% if user.is_authenticated && detailpost.author%}
+   <a href="{% url 'post-edit' pk% }">Edit Post</a>
+   <a href="{% url 'post-delete' detailpost.pk% }">Delete Post</a>
+
+   
+{% endif %}
+
+<a href="{% url 'posts'%}" >Go back to Posts</a>
+
+
+
+{% endblock %}

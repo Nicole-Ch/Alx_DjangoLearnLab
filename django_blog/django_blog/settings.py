@@ -75,7 +75,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'django_blog.wsgi.application'
-LOGIN_REDIRECT_URL = '/profile/'
+LOGIN_REDIRECT_URL = '/profile/'   # or reverse_lazy('profile')
+LOGIN_URL = '/login/'              # optional if you want custom login URL
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases

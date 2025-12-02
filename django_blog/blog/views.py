@@ -1,10 +1,16 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
-from django.views.generic import CreateView , UpdateView
+from django.views.generic import CreateView 
 from django.contrib.auth import views as auth_views
+from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+
+from blog.forms import BlogForm
+
+
+from .models import  Post
 # Create your views here.
 
 class RegisterView(CreateView):
@@ -20,7 +26,7 @@ class LogoutView(auth_views.LogoutView):
     template_name = "blog/logout.html" 
 
 
-class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+class ProfileUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = User
     fields = ["email"]
     template_name = "blog/profile.html"
@@ -40,6 +46,40 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
         if form.is_valid():
             # explicit save() call as required by the check
             self.object = form.save()
+            #self.object is not the single email field itself. It is the User model instance.
             return redirect(self.get_success_url())
         # if form invalid, re-render with errors (UpdateView's default behavior)
         return self.form_invalid(form)
+
+
+class BlogListView(generic.ListView):
+    model = Post
+    template_name = 'blog/list.html'
+    context_object_name = 'posts'
+
+class BlogDetailView(generic.DetailView):
+    model = Post
+    template_name = 'blog/detail.html'
+    context_object_name = 'detailpost'
+
+class BlogCreateView(LoginRequiredMixin, generic.CreateView):
+    model = Post
+    form_class = BlogForm
+    template_name = 'blog/form.html'
+    
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+class BlogUpdateView(generic.UpdateView):
+    model = Post
+    form_class = BlogForm
+    template_name = 'post_form.html' 
+
+class BlogDeleteView(generic.DeleteView):
+    model = Post
+    context_object_name = 'blog'
+    success_url = reverse_lazy('posts')    
+
+
