@@ -4,8 +4,9 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView 
 from django.contrib.auth import views as auth_views
 from django.views import generic
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin , UserPassesTestMixin
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
 from blog.forms import BlogForm
 
@@ -72,14 +73,22 @@ class BlogCreateView(LoginRequiredMixin, generic.CreateView):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
-class BlogUpdateView(generic.UpdateView):
+class BlogUpdateView(UserPassesTestMixin, generic.UpdateView):
     model = Post
     form_class = BlogForm
-    template_name = 'post_form.html' 
+    template_name = 'post_form.html'
 
-class BlogDeleteView(generic.DeleteView):
+    def test_func(self):
+        post = self.get_object()
+        return post.author == self.request.user 
+
+class BlogDeleteView(UserPassesTestMixin, generic.DeleteView):
     model = Post
     context_object_name = 'blog'
-    success_url = reverse_lazy('posts')    
+    success_url = reverse_lazy('posts')   
+
+    def test_func(self):
+        post = self.get_object()
+        return post.author == self.request.user 
 
 
