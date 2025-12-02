@@ -54,18 +54,18 @@ class ProfileUpdateView(LoginRequiredMixin, generic.UpdateView):
 
 class BlogListView(generic.ListView):
     model = Post
-    template_name = 'blog/list.html'
+    template_name = 'blog/post_list.html'
     context_object_name = 'posts'
 
 class BlogDetailView(generic.DetailView):
     model = Post
-    template_name = 'blog/detail.html'
+    template_name = 'blog/post_detail.html'
     context_object_name = 'detailpost'
 
 class BlogCreateView(LoginRequiredMixin, generic.CreateView):
     model = Post
     form_class = BlogForm
-    template_name = 'blog/form.html'
+    template_name = 'blog/post_form.html'
     
 
     def form_valid(self, form):
