@@ -107,7 +107,9 @@ class CommentCreateView(LoginRequiredMixin, generic.CreateView):
 
 
     def dispatch(self, request, *args, **kwargs):
-        self.post = get_object_or_404(Post, pk=self.kwargs.get('post_pk'))
+        post_pk = self.kwargs.get('post_pk') or self.kwargs.get('pk')
+        self.post = get_object_or_404(Post, pk=post_pk)
+        
         return super().dispatch(request, *args, **kwargs)
     
     def form_valid(self, form):
