@@ -12,7 +12,7 @@
     {% for post in posts %}
     <li>
         <p>{{post.title}}</p>
-        <p>{{post.author.username}} - {{post.published-date}}</p>
+        <p>{{post.author.username}} - {{post.published_date}}</p>
         <p>{{post.content| truncatewords:30}}</p>
         <p><a href="{% url 'post-detail' post.pk%}">Read More</a></p>
     </li>
