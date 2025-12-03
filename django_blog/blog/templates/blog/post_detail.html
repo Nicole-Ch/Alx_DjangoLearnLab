@@ -14,6 +14,55 @@
    
 {% endif %}
 
+
+<!-- COMMENTS LIST -->
+<section id="comments">
+   <h2>Comments {{comments.count}}</h2>
+   {% if comments %}
+
+        <ul>
+         {% for comment in comments %}
+           <li>
+                <p><strong>{{comment.author}}</strong> - {{comment.created_at}}</p>
+                <p>{{comment.content}}</p>
+
+
+                {% if user.is_authenticated && user == comment.author%}
+                   <a href="{% url 'comment-edit' %}">Edit Comment</a>
+                   <a href="{% url 'comment-delete' %}">Delete Comment</a>
+                {% endif %}   
+           </li>
+           {% endfor %}
+        </ul>
+   {% else %}
+   
+    <p>No comments Yet</p>
+   
+    {% endif %}
+    
+</section>
+
+
+
+
+<!-- CREATE COMMENT -->
+ <section id="create-comment">
+   {% if user.is_authenticated %}
+   <h2>Leave a Comment</h2>
+    <form action="{% url 'comment-create' detailpost.pk %}" method="post">
+      {% csrf_token %}
+      {{form.as_p}}
+      <button type="submit">Post Comment</button>
+    </form>
+
+    {% else %}
+    <p><a href="{% url 'login' %}">Log in</a>to leave a comment</p>
+   
+    {% endif %}
+
+
+ </section>
+
 <a href="{% url 'posts'%}" >Go back to Posts</a>
 
 
