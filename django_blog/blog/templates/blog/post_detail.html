@@ -63,6 +63,18 @@
 
  </section>
 
+ <div class="post-tags">
+  <strong>Tags:</strong>
+  {% if post.tags.all %}
+    {% for tag in post.tags.all %}
+      <a href="{% url 'posts-by-tag' tag.name %}">{{ tag.name }}</a>{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+  {% else %}
+    <span>No tags</span>
+  {% endif %}
+</div>
+
+
 <a href="{% url 'posts'%}" >Go back to Posts</a>
 
 
