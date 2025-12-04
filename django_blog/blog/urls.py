@@ -1,6 +1,6 @@
 # blog/urls.py
 from django.urls import path
-from .views import CommentCreateView, CommentDeleteView, CommentUpdateView, RegisterView, LoginView, LogoutView, ProfileUpdateView , BlogCreateView,BlogDeleteView,BlogDetailView,BlogListView,BlogUpdateView, SearchResultsView, TagListView
+from .views import CommentCreateView, CommentDeleteView, CommentUpdateView, PostByTagListVie, PostByTagListView, RegisterView, LoginView, LogoutView, ProfileUpdateView , BlogCreateView,BlogDeleteView,BlogDetailView,BlogListView,BlogUpdateView, SearchResultsView, TagListView
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
@@ -21,5 +21,7 @@ urlpatterns = [
 
     path('tags/<str:tag_name>/', TagListView.as_view(), name='posts-by-tag'),
     path('search/', SearchResultsView.as_view(), name='post-search'),
+
+    path('tags/<slug:tag_slug>/', PostByTagListView.as_view(), name='posts-by-tag'),
 
 ]

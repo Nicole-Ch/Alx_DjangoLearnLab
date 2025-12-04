@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Posts tagged "{{ tag_name }}"{% endblock %}
+{% block content %}
+  <h1>Posts tagged "{{ tag_name }}"</h1>
+
+  <ul>
+    {% for post in posts %}
+      <li>
+        <a href="{% url 'post-detail' post.pk %}">{{ post.title }}</a>
+        <p>{{ post.content|truncatewords:20 }}</p>
+      </li>
+    {% empty %}
+      <li>No posts found for this tag.</li>
+    {% endfor %}
+  </ul>
+
+  {% if is_paginated %}
+    <div class="pagination">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+      {% endif %}
+      <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">next</a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+{% endblock %}

@@ -151,20 +151,23 @@ class CommentDeleteView(LoginRequiredMixin,UserPassesTestMixin, generic.DeleteVi
         return reverse('post-detail', kwargs={'pk': self.get_object().post.pk})
 
 
-class TagListView(generic.ListView):
+class PostByTagListView(generic.ListView):
     model = Post
     template_name = 'blog/tag_post_list.html'
     context_object_name = 'posts'
     paginate_by = 10
 
     def get_queryset(self):
-        tag_name = self.kwargs.get('tag_name')
+        tag_slug = self.kwargs.get('tag_slug', '') 
+        tag_name = tag_slug.replace('-', ' ') 
         # tags__name__iexact searches posts that have a tag with this name (case-insensitive)
         return Post.objects.filter(tags__name__iexact=tag_name).distinct()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['tag_name'] = self.kwargs.get('tag_name')
+        tag_slug = self.kwargs.get('tag_slug', '')
+        context['tag_slug'] = tag_slug
+        context['tag_name'] = tag_slug.replace('-', ' ')
         return context
 
 
