@@ -3,6 +3,8 @@ from django import forms
 
 
 class BlogForm(forms.ModelForm):
+    tags = TagField(required=False, widget=TagWidget())
+
     class Meta:
         model = Post
         fields = ['title', 'content', 'tags']
