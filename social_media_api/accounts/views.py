@@ -3,12 +3,15 @@ from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import CreateView , TemplateView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
-from django.contrib.auth.views import LoginView  
+from rest_framework import status, permissions
+from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+from rest_framework.views import APIView
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from accounts.forms import CustomUserCreationForm
+from accounts.serializers import LoginSerializer, UserSerializer
 # Create your views here.
 class RegisterView(SuccessMessageMixin, CreateView):
     form_class = CustomUserCreationForm
@@ -16,18 +19,16 @@ class RegisterView(SuccessMessageMixin, CreateView):
     success_url = reverse_lazy('login')
     success_message = "You are registered successfully"
 
-class SignInView(LoginView):
-    
-    template_name = 'login.html' 
-    
+class SignInView(APIView):
+    permission_classes = [permissions.AllowAny]
 
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        user = form.get_user()
-        token, created = Token.objects.get_or_create(user=user)
-        self.request.session['auth_token'] = token.key  # optional
-        messages.info(self.request, "An API token has been created for your account (stored in session).")
-        return response
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.validated_data['user']
+        token = serializer.validated_data['token']  # LoginSerializer put token there
+        return Response({'token': token, 'user': UserSerializer(user).data}, status=status.HTTP_200_OK)
 
 
 class ProfileView(LoginRequiredMixin, TemplateView):
