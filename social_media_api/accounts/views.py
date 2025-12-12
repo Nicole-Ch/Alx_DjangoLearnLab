@@ -17,6 +17,7 @@ from accounts.forms import CustomUserCreationForm
 from accounts.models import CustomUser
 from accounts.serializers import LoginSerializer, UserSerializer
 from posts.serializers import PostSerializer
+from posts.models import Post
 
 User = get_user_model()
 # Create your views here.
@@ -110,7 +111,7 @@ class FeedAPIView(APIView):
         following_users = request.user.following.all()
 
         # Filter posts by those authors
-        from .models import Post
+       
         qs = Post.objects.filter(author__in=following_users).order_by('-created_at')
 
         # Paginate
