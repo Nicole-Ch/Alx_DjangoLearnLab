@@ -3,9 +3,10 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets, permissions, filters , status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from .permissions import IsOwnerOrReadOnly
-from .pagination import StandardResultsSetPagination
+
 from accounts.serializers import UserSerializer
+from posts.pagination import StandardResultsSetPagination
+from posts.permissions import IsOwnerOrReadOnly
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 from rest_framework import generics
@@ -77,7 +78,7 @@ class UnfollowUserAPIView(generics.GenericAPIView):
                          "following_count": request.user.following.count()},
                           status=status.HTTP_200_OK )    
     
-class FeedAPIView(APIView):
+class UserFeedView(APIView):
     """
     Returns posts from users the current user follows, newest first.
     Pagination applied.
