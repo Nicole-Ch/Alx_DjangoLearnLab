@@ -4,7 +4,7 @@ from django.views.generic import CreateView
 from rest_framework import generics
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
-from rest_framework import status, permissions
+from rest_framework import status, permissions, filters
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
@@ -107,11 +107,11 @@ class FeedAPIView(APIView):
 
     def get(self, request):
         # Get the users the current user follows
-        following_qs = request.user.following.all()
+        following_users = request.user.following.all()
 
         # Filter posts by those authors
         from .models import Post
-        qs = Post.objects.filter(author__in=following_qs).order_by('-created_at')
+        qs = Post.objects.filter(author__in=following_users).order_by('-created_at')
 
         # Paginate
         paginator = self.pagination_class()
