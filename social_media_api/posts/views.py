@@ -5,16 +5,18 @@ from rest_framework import viewsets, permissions, filters , status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from accounts.serializers import UserSerializer
+from notifications.models import Notification
 from posts.pagination import StandardResultsSetPagination
 from posts.permissions import IsOwnerOrReadOnly
-from .models import Post, Comment
-from .serializers import PostSerializer, CommentSerializer
+from .models import Post, Comment , Like
+from .serializers import LikeSerializer, PostSerializer, CommentSerializer
 from rest_framework import generics
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from accounts.models import CustomUser
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.contrib.contenttypes.models import ContentType
 
 
 User = get_user_model()
@@ -111,3 +113,49 @@ class UserList(generics.ListAPIView):
     queryset = CustomUser.objects.all()   # <--- check looks for this exact text
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]            
+
+
+class LikePostAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk) #Look up the Post object with primary key equal to pk
+        user = request.user #currently authenticated user
+
+
+        like, created = Like.objects.get_or_create(post=post, user=user)
+        #The left-hand post is the model field name (Like has a ForeignKey named post). 
+        # The right-hand post is the local Python variable we just fetched (post = get_object_or_404(...)). 
+        # Django uses those kwargs to either find or create Like(post=<Post instance>, user=<User instance>).
+
+        if not created: #If created is False, that means the user already liked the post
+          return  Response(f"Details:" "You already Liked this post", status =  status.HTTP_400_BAD_REQUEST)
+        
+
+         # create notification for post author (if not liking own post)
+        if post.author != user: #We don't want to create a notification when someone likes their own post (that’d be noisy).
+            Notification.objects.create(
+                recipient=post.author,
+                actor=user,
+                verb='liked your post',
+                target_content_type=ContentType.objects.get_for_model(post),
+                target_object_id=str(post.pk)
+            )
+        
+        return Response(LikeSerializer(like).data, status=status.HTTP_201_CREATED)
+    
+
+class UnlikePostAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        user = request.user
+
+        try:
+            like = Like.objects.get(post=post, user=user)
+        except Like.DoesNotExist:
+            return Response({"detail": "Not liked"}, status=status.HTTP_400_BAD_REQUEST)
+
+        like.delete()
+        return Response({"detail": "Unliked"}, status=status.HTTP_200_OK)    
