@@ -1,14 +1,19 @@
 from django.shortcuts import render
-from rest_framework import viewsets, permissions, filters
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets, permissions, filters , status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .permissions import IsOwnerOrReadOnly
 from .pagination import StandardResultsSetPagination
+from accounts.serializers import UserSerializer
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 from rest_framework import generics
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from accounts.models import CustomUser
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 
 User = get_user_model()
@@ -55,7 +60,7 @@ class FollowUserAPIView(generics.GenericAPIView):
             "following_count": request.user.following.count()
         }, status=status.HTTP_200_OK)
     
-class UnfollowUserAPIView(generic.GenericAPIView):
+class UnfollowUserAPIView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self,request,user_id ):

@@ -57,14 +57,13 @@ ROOT_URLCONF = 'social_media_api.urls'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-),
+        'rest_framework.authentication.TokenAuthentication',    # API token auth
+        'rest_framework.authentication.SessionAuthentication',  # optional: for browsable API / Django login
+    ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-),
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ),
 }
-
 
 TEMPLATES = [
     {
