@@ -1,5 +1,5 @@
-from django.shortcuts import render
 
+from django.http import HttpResponse
 from django.views.generic import CreateView 
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
@@ -7,13 +7,15 @@ from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
-
+from django.shortcuts import get_object_or_404
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-
+from django.contrib.auth import get_user_model
 from accounts.forms import CustomUserCreationForm
 from accounts.serializers import LoginSerializer, UserSerializer
+
+User = get_user_model()
 # Create your views here.
 class RegisterView(SuccessMessageMixin, CreateView):
     form_class = CustomUserCreationForm
@@ -53,3 +55,40 @@ class ProfileAPIView(APIView):
             'user': UserSerializer(user).data,
             'token': token.key
         })
+    
+
+
+
+class FollowUser(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, user_id):
+        target = get_object_or_404(User, pk=user_id)
+
+        if target == request.user:
+         return Response({"detail": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        request.user.following.add(target)
+
+        request.user.save()
+
+        return Response({
+            "detail": f"You are now following {target.username}",
+            "following_count": request.user.following.count()
+        }, status=status.HTTP_200_OK)
+    
+class UnfollowUser(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self,request,user_id ):
+        target = get_object_or_404(User, id=user_id)
+
+        if target == request.user:
+            return Response({"detail": "You can't unfollow yourself"})
+
+        request.user.following.remove(target)
+        request.user.save()
+
+
+        return Response({"detail": f"You are now unfollowing {target.username} ",
+                         "following_count": request.user.following.count()},
+                          status=status.HTTP_200_OK )    
