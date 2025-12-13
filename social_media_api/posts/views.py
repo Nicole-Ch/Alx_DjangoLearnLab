@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import viewsets, permissions, filters , status
+from rest_framework import viewsets, permissions, filters , status 
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from accounts.serializers import UserSerializer
@@ -119,7 +119,7 @@ class LikePostAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
-        post = get_object_or_404(Post, pk=pk) #Look up the Post object with primary key equal to pk
+        post = generics.get_object_or_404(Post, pk=pk) #Look up the Post object with primary key equal to pk
         user = request.user #currently authenticated user
 
 
@@ -151,7 +151,7 @@ class UnlikePostAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
-        post = get_object_or_404(Post, pk=pk)
+        post = generics.get_object_or_404(Post, pk=pk)
         user = request.user
 
         try:
