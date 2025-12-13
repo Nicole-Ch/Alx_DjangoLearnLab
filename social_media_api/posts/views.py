@@ -123,7 +123,7 @@ class LikePostAPIView(APIView):
         #user = request.user #currently authenticated user 
 
 
-        like, created = Like.objects.get(user= request.user, post=post)
+        like, created = Like.objects.get_or_create(user= request.user, post=post)
         #The left-hand post is the model field name (Like has a ForeignKey named post). 
         # The right-hand post is the local Python variable we just fetched (post = get_object_or_404(...)). 
         # Django uses those kwargs to either find or create Like(post=<Post instance>, user=<User instance>).
@@ -155,7 +155,7 @@ class UnlikePostAPIView(APIView):
         
 
         try:
-            like = Like.objects.get(user= request.user, post=post)
+            like = Like.objects.get_or_create(user= request.user, post=post)
         except Like.DoesNotExist:
             return Response({"detail": "Not liked"}, status=status.HTTP_400_BAD_REQUEST)
 
