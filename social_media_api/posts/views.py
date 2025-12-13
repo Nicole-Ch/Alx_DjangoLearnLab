@@ -138,8 +138,10 @@ class LikePostAPIView(APIView):
                 recipient=post.author,
                 actor=user,
                 verb='liked your post',
-                target_content_type=ContentType.objects.get_for_model(post),
+                target_content_type=ContentType.objects.get_for_model(post), #finds the row for (app_label='posts', model='post') and returns the ContentType instance
                 target_object_id=str(post.pk)
+                #ContentType.objects.get_for_model(post) returns a ContentType (a row in django_content_type) that represents the model class (e.g. posts.Post)
+                #  — not the post instance — and target_object_id = str(post.pk) stores the primary key of the specific Post instance. Together those two fields let you find the exact Post later.
             )
         
         return Response(LikeSerializer(like).data, status=status.HTTP_201_CREATED)
