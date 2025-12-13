@@ -155,7 +155,7 @@ class UnlikePostAPIView(APIView):
         
 
         try:
-            like = Like.objects.get_or_create(user= request.user, post=post)
+            like = Like.objects.get(user= request.user, post=post)
         except Like.DoesNotExist:
             return Response({"detail": "Not liked"}, status=status.HTTP_400_BAD_REQUEST)
 
