@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from accounts.serializers import UserSerializer
 from .models import Post, Comment, Like
 
 
@@ -18,8 +20,10 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = "__all__"
 
-class LikeSerializer(serializers.ModelSerializer):
 
+class LikeSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    
     class Meta:
-        model = Like   
-        fields = "__all__"                 
+        model = Like
+        fields = ['id', 'user', 'post', 'created_at']              
