@@ -23,7 +23,7 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 SECRET_KEY = 'django-insecure-w43vpu!jpanxvg^iwst-(ilhmgfwj13ag2a&kc7xyjxtfc@n12'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -89,11 +89,26 @@ WSGI_APPLICATION = 'social_media_api.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME':  'django_social_media',
+        'USER': 'root',
+        'PASSWORD': 'TNYBold$2025',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    # add your domain later e.g. 'yourapp.onrender.com'
+]
 
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -130,6 +145,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'    # or os.path.join(BASE_DIR, 'media')
